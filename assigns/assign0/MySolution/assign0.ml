@@ -41,6 +41,11 @@ given natural number is a prime:
 fun isPrime(n0: int): bool
 *)
 
+let int i = 
+let rec
+isPrime(n0: int): bool = 
+if n0 
+;;
 (* ****** ****** *)
 
 (*
@@ -49,6 +54,8 @@ Please implement a function that converts a given
 integer to a string that represents the integer:
 fun int2str(i0: int): string
 *)
+
+int2str()
 
 (* ****** ****** *)
 
@@ -60,6 +67,9 @@ fun str2int(cs: string): int
 In particular, it is expected that str2int(int2str(x)) = x
 *)
 
+str2int(x: string): int =
+
+
 (* ****** ****** *)
 
 (*
@@ -68,6 +78,11 @@ Please implement a function that returns the reverse of
 a given string:
 fun stringrev(cs: string): string
 *)
+
+let rec
+stringrev(cs: string): string =
+if cs = "" then "" else cs[cs.len -1] ^ stringrev(cs[])
+;;
 
 (* ****** ****** *)
 
