@@ -21,7 +21,8 @@ avoid.
 
 fun string_avoid_1324(cs: string): bool
 *)
-#use "./../../../classlib/OCaml/MyOcaml.ml";;
+#use "./../assign1.ml";; 
+#use "./../../../classlib/OCaml/MyOCaml.ml";; 
 
 let string_avoid_1324(cs)=
   let n = string length cs in

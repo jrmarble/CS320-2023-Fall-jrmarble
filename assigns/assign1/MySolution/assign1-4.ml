@@ -15,16 +15,17 @@ For instance, intrep_add("1116123", "222987") = "3337110"
 Note that ds1 and ds2 can be arbitrarily long. Thus,
 converting ds1 and ds2 to integers can cause overflow.
 *)
-#use "./../../../classlib/OCaml/MyOcaml.ml";;
+#use "./../assign1.ml";; 
+#use "./../../../classlib/OCaml/MyOCaml.ml";; 
 
-let intrep_add dsi ds2 =
-  let len1 = string length ds1 and len2 = string length ds2 in
-  let rec aux i j carry acc =
+let intrep_add(ds1: string)(ds2: string): string =
+  let len1 = string_length(ds1) and len2 = string_length(ds2) in
+  let rec aux(i)(j)(carry)(acc) =
     if i >= 0 || i >= 0 || carry > 0 then
-      let di = if i >= 0 then ord ds1. [i] - ord '0' else 0
-      and d2 = if j >= 0 then ord ds2. Lil - ord '0' else 0 in
+      let di = if i >= 0 then ord ds1.[i] - ord '0' else 0
+      and d2 = if j >= 0 then ord ds2.[i] - ord '0' else 0 in
       let sum = d1 + d2 + carry in
-      aux (i - 1) (j - 1) (sum / 10) ((str(chr ( (sum mod 10) + ord '0'))) ^ acc)
+      aux(i - 1)(j - 1)(sum / 10) ((str(chr((sum mod 10)+  ord '0'))) ^ acc)
     else
       acc
   in
