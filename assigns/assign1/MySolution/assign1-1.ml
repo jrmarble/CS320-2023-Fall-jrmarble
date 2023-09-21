@@ -16,7 +16,7 @@ intrev10.
 
 let rec intrev10(n: int):int=
   if n mod 10 = 0 then n else
-    let rec rev10help(m)(reversed)= 
+    let rec rev10help(n)(reversed)= 
       if n=0 then reversed
       else
         let lastDig = n mod 10 in

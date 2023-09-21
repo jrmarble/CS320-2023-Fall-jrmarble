@@ -26,13 +26,13 @@ fun string_avoid_132(cs: string): bool
 #use "./../../../classlib/OCaml/MyOCaml.ml";; 
 
 let string_avoid_132(cs: string): bool=
-  let n = string (length)(cs) in
+  let n = string_length(cs) in
   let rec loop(i)(j)(k) = 
     if i >= n-3 then true
     else if j >= n-2 then loop(i + 1)(i + 2)(i + 3)
-    else if k >= n-1 then loop(i)(g + 1)(j + 2)
+    else if k >= n-1 then loop(i)(j + 1)(j + 2)
     else if cs.[i] < cs.[k] && cs.[k] < cs.[j] then false 
     else loop(i)(j)(k + 1)
   in
-  loop(0)(1)(2)(3)
+  loop(0)(1)(2)
 ;;
