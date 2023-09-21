@@ -25,7 +25,7 @@ fun string_avoid_1324(cs: string): bool
 #use "./../../../classlib/OCaml/MyOCaml.ml";; 
 
 let string_avoid_1324(cs)=
-  let n = string length cs in
+  let n = string_length cs in
   let rec loop i j k l = 
     if i >= n-4 then true
     else if j >= m-3 then loop(i+1)(i+2)(i+3)(i+4) 

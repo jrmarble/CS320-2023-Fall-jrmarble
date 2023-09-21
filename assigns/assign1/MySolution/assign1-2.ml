@@ -26,8 +26,10 @@ let string_merge(cs1)(cs2) =
     else
       let charl = string_get_at(cs1) (x) in
       let char2 = string_get_at(c52) (y) in
-      if charl < char2 then | (work(char1); merge_helper (X+1) (y) (work)) else 
-        (work(char2); merge_helper(x) (y+1) (work)) in
+      if charl < char2 then 
+        (work(char1); merge_helper (X+1) (y) (work)) 
+      else (work(char2); merge_helper(x) (y+1) (work)) 
+    in
   string_make_fwork(merge_helper (0) (0)) 
 ;;
 
