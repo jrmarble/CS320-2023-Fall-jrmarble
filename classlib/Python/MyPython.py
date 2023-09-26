@@ -71,7 +71,7 @@ class fnlist_iter:
 class fnlist_nil(fnlist):
     def __init__(self):
         self.ctag = 0
-        return None
+        # return None
 # end-of-class(fnlist_nil)
 
 class fnlist_cons(fnlist):
@@ -79,7 +79,7 @@ class fnlist_cons(fnlist):
         self.ctag = 1
         self.cons1 = cons1
         self.cons2 = cons2
-        return None
+        # return None
     def get_cons1(self):
         return self.cons1
     def get_cons2(self):
@@ -88,18 +88,26 @@ class fnlist_cons(fnlist):
 
 ####################################################
 def fnlist_sing(x0):
-    return fnlist_cons(x0, fnlist_nil())
+    res = fnlist_nil()
+    res = fnlist_cons(x0, res)
+    return res
 ####################################################
 def fnlist_print(xs):
     nx = 0
     sep = "; "
-    print("[",end='')
+    print("fnlist[",end='')
     while(xs.ctag > 0):
         if (nx > 0):
             print(sep,end='')        
         print(xs.cons1,end='')
         nx = nx + 1; xs = xs.cons2
     print("]", end='')
+####################################################
+def fnlist_reverse(xs):
+    res = fnlist_nil()
+    for x1 in xs:
+        res = fnlist_cons(x1, res)
+    return res
 ####################################################
 
 ############### end of [CS320-2023-Fall-classlib-MyPython.py] ###############
