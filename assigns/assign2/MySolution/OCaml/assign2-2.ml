@@ -14,7 +14,6 @@ let rec
 mylist_get_at(xs: 'a mylist)(i0: int): 'a = ...
 //
 *)
-#use "./../../../classlib/OCaml/MyOCaml.ml"
 #use "./../../assign2.ml"
 
 let rec 
@@ -24,7 +23,7 @@ mylist_get_at(xs: 'a mylist)(i0: int): 'a =
     match xs with
     | MyNil -> mylist_subscript_exn()
     | MyCons(x, rest) ->
-      if (i0=10) then x
+      if (i0=0) then x
       else mylist_get_at(rest)(i0-1)
     | MySnoc(rest, x) ->
       if i0 = (mylist_length(rest)) then x
@@ -34,7 +33,7 @@ mylist_get_at(xs: 'a mylist)(i0: int): 'a =
     | MyAppend2(xs1, xs2) ->
       let length1 = mylist_length(xs1)
       in
-      if (i0<len1) then mylist_get_at(xs1)(i0)
+      if (i0<length1) then mylist_get_at(xs1)(i0)
       else mylist_get_at(xs2)(i0-length1)
   
 and mylist_length(xs: 'a mylist): int = 

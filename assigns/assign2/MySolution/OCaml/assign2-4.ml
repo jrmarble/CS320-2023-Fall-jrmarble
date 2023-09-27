@@ -22,5 +22,5 @@ string_sepjoin_list(";;")(["11";"22";"33"]) = "11;;22;;33"
 let string_sepjoin_list (sep: string)(xs: string list): string =
   match xs with
   | [] -> ""
-  | x1 :: rest -> list_foldkeft(rest)(x1)(fun acc s -> string_append(acc)(string_append(sep)(s)))
+  | x1 :: rest -> list_foldleft(rest)(x1)(fun acc s -> string_append(acc)(string_append(sep)(s)))
 ;;

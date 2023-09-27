@@ -19,7 +19,7 @@ foldleft_to_iforeach(foldleft: ('xs, 'x0, int) foldleft): ('xs, 'x0) iforeach =
       action(idx)(x);
       idx + 1
     in
-    let _ = foldleft(xs)(0)(helper)
+    let _ = foldleft(xs)(0)(foldHelp)
     in
     ()
 ;;
