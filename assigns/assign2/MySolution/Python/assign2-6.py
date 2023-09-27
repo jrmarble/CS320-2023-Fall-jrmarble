@@ -32,6 +32,9 @@
 # in
 #   string_make_fwork(foreach(0)(0))
 # ;;
+import sys
+sys.path.append("./../../../../classlib/Python")
+from MyPython import *
 
 def string_length(cs):
     return len(cs)
