@@ -24,10 +24,8 @@ Datatypes and Pattern Matching
 Encoding functional lists in Python
 ################################################
 lecture-09-26:
-More list-processing
-(e.g., merge-sorting)
-More list-combinators
-(e.g., map, zip, cross)
+options, exceptions
+More list-combinators(e.g., map)
 ################################################
 lecture-09-28:
 lazy-evaluation and streams (I)
@@ -42,8 +40,7 @@ lecture-10-10: (Monday's schedule)
 lecture-10-12:
 Continuation/Generators(Python) (I)
 ################################################
-lecture-10-17:
-Continuation/Generators(Python) (II)
+lecture-10-17: Review
 ################################################
 lecture-10-19: Midterm
 ################################################

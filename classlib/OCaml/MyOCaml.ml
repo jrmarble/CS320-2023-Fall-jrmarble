@@ -7,7 +7,8 @@
 (* ****** ****** *)
 exception False;;
 (* ****** ****** *)
-
+exception Subscript;;
+(* ****** ****** *)
 
 (** Return the character with the given ASCII code. **)
 let chr = Char.chr;;
@@ -442,6 +443,77 @@ let string_concat_list(css: string list): string =
   )
 ;;
 
+(* ****** ****** *)
+
+type 'a strcon =
+  StrNil
+| StrCons of
+  'a * (unit -> 'a strcon)
+
+(* ****** ****** *)
+
+type 'a stream =
+unit -> 'a strcon (* thunk *)
+
+(* ****** ****** *)
+
+let rec
+stream_map
+(fxs: 'a stream)
+(fopr: 'a -> 'b): 'b stream =
+fun () ->
+match fxs() with
+|
+StrNil -> StrNil
+|
+StrCons(x1, fxs) ->
+StrCons
+(fopr(x1), stream_map(fxs)(fopr))
+;;
+(* ****** ****** *)
+
+let rec
+stream_foreach
+(fxs: 'a stream)
+(work: 'a -> unit): unit =
+match fxs() with
+| StrNil -> ()
+| StrCons(x1, fxs) ->
+  (work(x1); stream_foreach(fxs)(work))
+;;
+(* ****** ****** *)
+
+let
+int1_map_stream
+(n0: int)
+(fopr: int -> 'a): 'a stream =
+let rec
+helper(i: int) =
+fun () ->
+if i >= n0
+then StrNil(*void*)
+else StrCons(fopr(i), helper(i+1)) in helper(0)
+;;
+(* ****** ****** *)
+
+let rec
+stream_append
+(fxs: 'a stream)
+(fys: 'a stream): 'a stream = fun() ->
+match fxs() with
+| StrNil -> fys()
+| StrCons(x1, fxs) ->
+  StrCons(x1, stream_append(fxs)(fys))
+;;
+(* ****** ****** *)
+
+let rec
+stream_concat_list
+(fxss: 'a stream list): 'a stream = fun() ->
+match fxss with
+| [] -> StrNil
+| fxs1 :: fxss -> stream_append(fxs1)(stream_concat_list(fxss))()
+;;
 (* ****** ****** *)
 
 (* end of [CS320-2023-Fall-classlib-MyOCaml.ml] *)
