@@ -231,8 +231,10 @@ let rec eval (stack : value list) (trace : string list) (env : (string * value) 
    (* If then Else *)
    | If (c1, c2) :: p0 -> (
       match stack with
-      | Const (Bool true) :: s0  (* IfStack *)      -> eval s0 trace env (c1 @ p0)
-      | Const (Bool false) :: s0 (* ElseStack *)    -> eval s0 trace env (c2 @ p0)
+      | Const (Bool true) :: s0 -> 
+         eval s0 trace env (list_append c1 p0) (* IfStack: execute c1 if true *)
+      | Const (Bool false) :: s0 -> 
+         eval s0 trace env (list_append c2 p0)  (* ElseStack: execute c2 if false *)
       | _ :: s0                  (* IfElseError1 *) -> eval [] ("Panic" :: trace) [] []
       | []                       (* IfElseError2 *) -> eval [] ("Panic" :: trace) [] [])
    (* Bind, Lookup *)
@@ -289,11 +291,6 @@ let interp (s : string) : string list option =
    | Some (prog, []) -> Some (eval [] [] [] prog)
    | _ -> None
 
-   let option_list_to_string (opt: string list option) : string =
-      match opt with
-      | Some strings -> String.concat ", " strings  (* Concatenates the list of strings with a separator *)
-      | None -> "None"  (* Or return an empty string "" if you prefer *)
-
 let test (t: int) (input: string) (expected_out: string list option) : unit =
    let actual_out = interp input in
    if actual_out = expected_out then
@@ -307,10 +304,68 @@ let tests () : unit =
       (2, "Push False; Not; Trace;", Some ["True"]);
       (3, "Push 3; Push 4; Gt; Trace;", Some ["True"]);
       (4, "Push 0; Push 2; Div; Trace;", Some ["Panic"]);
-      (5, "Push x; Lookup; Trace;", None);
-      (6, "Push 3; Push 3; Mul; Push -4; Push 3; Mul; Add; Push 7; Add; Trace;", Some ["4"]);
-      (7, "Push 2; Push 2; Mul; Push 3; Push 3; Mul; Gt; Trace;", Some ["True"]);
+      (5, "Push 3; Push 3; Mul; Push -4; Push 3; Mul; Add; Push 7; Add; Trace;", Some ["4"]);
+      (6, "Push 2; Push 2; Mul; Push 3; Push 3; Mul; Gt; Trace;", Some ["True"]);
+      (7, "Push poly;
+      Fun
+      Push x;
+      Bind;
+      Push x;
+      Lookup;
+      Push x;
+      Lookup;
+      Mul;
+      Push -4;
+      Push x;
+      Lookup;
+      Mul;
+      Add;
+      Push 7;
+      Add;
+      Swap;
+      Return;
+      End;
+      Push 3;
+      Swap;
+      Call;
+      Trace;", Some ["4"]);
+      (8, "Push factorial;
+      Fun
+      Push n;
+      Bind;
+      Push n;
+      Lookup;
+      Push 2;
+      Gt;
+      If
+      Push 1;
+      Swap;
+      Return;
+      Else
+      Push n;
+      Lookup;
+      Push -1;
+      Add;
+      Push factorial;
+      Lookup;
+      Call;
+      Push n;
+      Lookup;
+      Mul;
+      Swap;
+      Return;
+      End;
+      19
+      End;
+      Push factorial;
+      Bind;
+      Push 4;
+      Push factorial;
+      Lookup;
+      Call;
+      Trace;", Some ["24"])
    ] in
+
    List.iter (fun (id, input, expected) -> test id input expected) test_cases
     
 (* Run all tests *)
