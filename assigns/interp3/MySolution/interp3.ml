@@ -328,4 +328,91 @@ let parse_prog (s : string) : expr =
   | Some (m, []) -> scope_expr m
   | _ -> raise SyntaxError
 
+let rec compile_expr scope = function
+  | Int i -> string_concat_list ["Push "; string_of_int i; "; "]
+  | Bool b -> string_concat_list ["Push "; if b then "True" else "False"; "; "]
+  | Unit -> "Push Unit; "
+  | UOpr (Neg, m) -> string_append (compile_expr scope m) "Neg; "
+  | UOpr (Not, m) -> string_append (compile_expr scope m) "Not; "
+  | BOpr (Add, m1, m2) -> string_concat_list [compile_expr scope m1; compile_expr scope m2; "Add; "]
+  | BOpr (Sub, m1, m2) -> string_concat_list [compile_expr scope m1; compile_expr scope m2; "Sub; "]
+  | BOpr (Mul, m1, m2) -> string_concat_list [compile_expr scope m1; compile_expr scope m2; "Mul; "]
+  | BOpr (Div, m1, m2) -> string_concat_list [compile_expr scope m1; compile_expr scope m2; "Div; "]
+  | BOpr (Mod, m1, m2) -> compile_mod scope m1 m2
+  | BOpr (And, m1, m2) -> string_concat_list [compile_expr scope m1; compile_expr scope m2; "And; "]
+  | BOpr (Or, m1, m2) -> string_concat_list [compile_expr scope m1; compile_expr scope m2; "Or; "]
+  | BOpr (Lt, m1, m2) -> string_concat_list [compile_expr scope m1; compile_expr scope m2; "Lt; "]
+  | BOpr (Gt, m1, m2) -> string_concat_list [compile_expr scope m1; compile_expr scope m2; "Gt; "]
+  | BOpr (Lte, m1, m2) -> compile_lte scope m1 m2
+  | BOpr (Gte, m1, m2) -> compile_gte scope m1 m2
+  | BOpr (Eq, m1, m2) -> compile_eq scope m1 m2
+  | Var x ->
+    (match find_var scope x with
+      | None -> raise (UnboundVariable x)
+      | Some v -> string_append "Lookup " (string_append v "; "))
+  | Fun (f, x, m) -> compile_fun scope f x m
+  | App (m1, m2) -> string_concat_list [compile_expr scope m1; compile_expr scope m2; "Call; "]
+  | Let (x, m1, m2) -> compile_let scope x m1 m2
+  | Seq (m1, m2) -> string_concat_list [compile_expr scope m1; "Pop; "; compile_expr scope m2]
+  | Ifte (m, n1, n2) -> compile_ifte scope m n1 n2
+  | Trace m -> string_append (compile_expr scope m) "Trace; "
+  | _ -> failwith "Not implemented yet"
+
+and compile_mod scope m1 m2 =
+  let cm1 = compile_expr scope m1 in
+  let cm2 = compile_expr scope m2 in
+  (* m1/m2 *)
+  let divide = string_concat_list [cm1; cm2; "Div; "] in
+  (* (m1/m2) * m2 *)
+  let multiply = string_concat_list ["Swap; "; cm2; "Mul; "] in
+  (* m1 - (m1/m2) * m2 *)
+  let push_m1 = string_concat_list ["Swap; "; cm1] in
+  string_concat_list [divide; multiply; push_m1; "Sub; "]
+
+and compile_lte scope m1 m2 = (* equivalent to NOT Gt *)
+  let gt = compile_expr scope (BOpr (Gt, m1, m2)) in
+  string_concat_list [gt; "Not; "]
+
+and compile_gte scope m1 m2 = (* equivalent to NOT Lt *)
+  let lt = compile_expr scope (BOpr (Lt, m1, m2)) in
+  string_concat_list [lt; "Not; "]
+
+and compile_eq scope m1 m2 = (* equivalent to NOT (Lt or Gt) *)
+  let less_than = compile_expr scope (BOpr (Lt, m1, m2)) in
+  let great_than = compile_expr scope (BOpr (Gt, m1, m2)) in
+  string_concat_list [less_than; "Not; "; great_than; "Not; "; "And; "]
+
+and compile_fun scope f x m =
+  let fv = new_var f in                   (* new variable name for function *)
+  let f_scope = (f, fv) :: scope in       (* add f to scope *)
+  let xv = new_var x in                   (* new variable name for parameter *)
+  let x_f_scope = (x, xv) :: f_scope in   (* add x to scope *)
+  let body = compile_expr x_f_scope m in  (* compile function with updated scope *)
+  string_concat_list ["Fun "; fv; " ["; body; "]; "]
+  
+and compile_let scope x m n =
+  let cm = compile_expr scope m in    (* compile expression *)
+  let xv = new_var x in               (* new variable name for the bound *)
+  let x_scope = (x, xv) :: scope in   (* add bound to scope *)
+  let cn = compile_expr x_scope n in  (* compile expression with updated scope *)
+  string_concat_list [cm; "Bind "; xv; "; "; cn]
+
+and compile_ifte scope m n1 n2 =
+  let _if = compile_expr scope m in     (* compile if expression *)
+  let _then = compile_expr scope n1 in  (* compile then expression *)
+  let _else = compile_expr scope n2 in  (* compile else expression *)
+  (* Construct the if-then-else logic using stack commands *)
+  
+  string_concat_list [
+
+  ]
+  
+
 let compile (s : string) : string = (* YOUR CODE *)
+  compile_expr [] (scope_expr (parse_prog s))
+
+let test_string = "let eff x = trace x in
+let foo x y z = () in
+foo (eff 1) (eff 2) (eff 3)"
+
+let () = print_string(compile(test_string))
