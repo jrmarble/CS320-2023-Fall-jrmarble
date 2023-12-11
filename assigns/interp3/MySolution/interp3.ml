@@ -351,7 +351,7 @@ let rec compile_expr scope = function
       | None -> raise (UnboundVariable x)
       | Some v -> string_concat_list ["Push "; v; "; Lookup; "])
   | Fun (f, x, m) -> compile_fun scope f x m
-  | App (m1, m2) -> string_concat_list [compile_expr scope m1; compile_expr scope m2; "Call; "]
+  | App (m1, m2) -> string_concat_list [compile_expr scope m1; compile_expr scope m2; "Swap; "; "Call; "]
   | Let (x, m1, m2) -> compile_let scope x m1 m2
   | Seq (m1, m2) -> string_concat_list [compile_expr scope m1; "Pop; "; compile_expr scope m2]
   | Ifte (m, n1, n2) -> compile_ifte scope m n1 n2
@@ -377,7 +377,7 @@ and compile_fun scope f x m =
   let xv = new_var x in                   (* new variable name for parameter *)
   let x_f_scope = (x, xv) :: f_scope in   (* add x to scope *)
   let body = compile_expr x_f_scope m in  (* compile function with updated scope *)
-  string_concat_list ["Push "; fv; " ; Fun "; body; "Return; End; "]
+  string_concat_list ["Push "; fv; "; Fun Push "; xv; "; Bind; "; body; "Swap; Return; End; "]
   
 and compile_let scope x m n =
   let cm = compile_expr scope m in    (* compile expression *)
@@ -390,12 +390,32 @@ and compile_ifte scope m n1 n2 =
   let _if = compile_expr scope m in     (* compile if expression *)
   let _then = compile_expr scope n1 in  (* compile then expression *)
   let _else = compile_expr scope n2 in  (* compile else expression *)
+  (* Construct the if-then-else logic using stack commands *)
   string_concat_list [_if; "If "; _then; "Else "; _else; "End; "]
   
 
 let compile (s : string) : string = (* YOUR CODE *)
   compile_expr [] (scope_expr (parse_prog s))
 
-let test_string = "if 1 > 2 then false else true"
+let test_string = "let rec pi n =
+  let q = 1 in
+  let r = 180 in
+  let t = 60 in
+  let j = 2 in
+  let rec loop n q r t j =
+  if n > 0 then
+  let u = 3 * (3 * j + 1) * (3 * j + 2) in
+  let y = (q * (27 * j - 12) + 5 * r) / (5 * t) in
+  trace y;
+  let q' = 10 * q * j * (2 * j - 1) in
+  let r' = 10 * u * (q * (5 * j - 2) + r - y * t) in
+  let t' = t * u in
+  let j' = j + 1 in
+  loop (n - 1) q' r' t' j'
+  else ()
+  in
+  loop n q r t j
+  in
+  pi 6"
 
 let () = print_string(compile(test_string))
