@@ -397,6 +397,25 @@ and compile_ifte scope m n1 n2 =
 let compile (s : string) : string = (* YOUR CODE *)
   compile_expr [] (scope_expr (parse_prog s))
 
-let test_string = "-3 + 4"
+let test_string = "let rec pi n =
+  let q = 1 in
+  let r = 180 in
+  let t = 60 in
+  let j = 2 in
+  let rec loop n q r t j =
+  if n > 0 then
+  let u = 3 * (3 * j + 1) * (3 * j + 2) in
+  let y = (q * (27 * j - 12) + 5 * r) / (5 * t) in
+  trace y;
+  let q' = 10 * q * j * (2 * j - 1) in
+  let r' = 10 * u * (q * (5 * j - 2) + r - y * t) in
+  let t' = t * u in
+  let j' = j + 1 in
+  loop (n - 1) q' r' t' j'
+  else ()
+  in
+  loop n q r t j
+  in
+  pi 6"
 
 let () = print_string(compile(test_string))
